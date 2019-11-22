@@ -20,17 +20,9 @@
     include_once("config.php");
     
     $database = new database;
+    $advert = new advert;
+    $advert_refresh = new advert_refresh;
 	$db = $database->connect();
-    
-    // global $db;
-    // try {
-    // 	$sql = $db->query("SELECT * FROM spoof ORDER BY RAND() LIMIT 1");
-    // } catch(PDOException $ex) {
-    // 	echo "An Error occured! ".$ex->getMessage(); 
-    // }
-    
-    // //$url = array();
-    // $row = $sql->fetch(PDO::FETCH_ASSOC);
 
     $count = $database->lists("spoof_log", false, false, "RAND", "", false, "count");
     $random = rand(10,20);
@@ -76,5 +68,4 @@
         $database->delete("spoof_log", $returnedData['ref'], "id");
         $c++;
     }
-	
 ?>
