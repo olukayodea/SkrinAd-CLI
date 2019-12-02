@@ -6,7 +6,7 @@
     // $dbpassword = "root";
     // $dbname = "linnkste_skrinad";
     $URL = "https://skrinad.me/";
-    $servername = "172.31.47.34";
+    $servername = "main-db.cpwhcjg2ara2.eu-west-3.rds.amazonaws.com";
     $dbusername = "skrinad_db_user";
     $dbpassword = "n%).*6CBlBBu";
     $dbname = "skrinad_db";
@@ -20,12 +20,10 @@
     include_once("config.php");
     
     $database = new database;
-    $advert = new advert;
-    $advert_refresh = new advert_refresh;
 	$db = $database->connect();
 
     $count = $database->lists("spoof_log", false, false, "RAND", "", false, "count");
-    $random = rand(10,20);
+    $random = rand(100,150);
     if ($count > $random) {
         $limit = $random;
     } else {
@@ -65,7 +63,7 @@
         curl_exec($process); 
         curl_close($process);
 
-        $database->delete("spoof_log", $returnedData['ref'], "id");
+        $database->delete("spoof_log", $returnedData['id'], "id");
         $c++;
     }
 ?>

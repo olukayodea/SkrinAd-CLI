@@ -6,7 +6,7 @@
     // $dbpassword = "root";
     // $dbname = "linnkste_skrinad";
     $URL = "https://skrinad.me/";
-    $servername = "172.31.47.34";
+    $servername = "main-db.cpwhcjg2ara2.eu-west-3.rds.amazonaws.com";
     $dbusername = "skrinad_db_user";
     $dbpassword = "n%).*6CBlBBu";
     $dbname = "skrinad_db";
@@ -23,41 +23,60 @@
     $db = $database->connect();
     
     class running extends database {
+		protected $ageRange = array("0-10", "11-17", "18-35", "36-65", "65+");
+		protected $gender = array("Male", "Female");
 		function adjust($id) {
 			$data = $this->listOne($id);
 			$avail_date = explode("_", $data['avail_date']);
 			$today = date("D");
 
+			$randomPost = rand(1, 3);
+
+			$counter = 0;
+
 			if (array_search($today, $avail_date) !== false ) {
 				$total = $this->total($data['ref']);
 				$used_imp = $data['used_imp'];
-				$total = $this->lists("users", false, false, "ref", "ASC", false, "count");
+				
 				if ($used_imp < $total) {
-					$to = rand(10, 20);
+					$to = rand(30, 50);
                     
                     if ($this->dailCap($data['ref']) <= $data['daily_cap']) {
 						for ($i = 0; $i < $to; $i++) {
-
-							$randomUser = rand(1, $total);
+							$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
 
 							$click = rand(0, 1);
 
 							if ($click == 1) {
-								$this->spin($randomUser, $data['ref'], $data['url']);
+								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
+								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
+								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
+								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
+								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
+								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
 							}
 							$array['advert'] = $data['ref'];
-							$array['user_id'] = $randomUser;
+							$array['user_id'] = $randomUser['ref'];
 							$array['impression'] = 1;
 							$array['impression_time'] = time()-(60*30);
 							$array['click'] = $click;
 							$array['click_time'] = time();
 				
 							//post to us
-							$this->postUpdate($array, false, false);
+							for ($j = 0; $j < $randomPost; $j++) {
+								$counter++;
+								$this->postUpdate($array, false, false);
+								$this->postUpdate($array, false, false);
+								$this->postUpdate($array, false, false);
+								$this->postUpdate($array, false, false);
+								$this->postUpdate($array, false, false);
+								$this->postUpdate($array, false, false);
+							}
 						}
 					}
 				}
 			}
+			return $counter." Processed";
         }
         
 		function dailCap($advert) {
@@ -112,7 +131,16 @@
                     'gender' => ($userData['gender'] != NULL ? $userData['gender'] : "Female"),
                     'synctime' => $synctime);
 
-                $this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
+					$this->insert("advert_stat", $data);
 
 			} else {
 				return false;
@@ -130,8 +158,11 @@
     }
     
     $running = new running;
-    $running->adjust(81);
-    $running->adjust(82);
-    $running->adjust(83);
-    $running->adjust(84);
+	//echo $running->adjust(81);
+    //echo $running->adjust(82);
+    echo $running->adjust(81);
+    echo $running->adjust(82);
+    echo $running->adjust(83);
+	echo "\n";
+    echo $running->adjust(84);
 ?>
