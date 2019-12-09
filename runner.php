@@ -25,66 +25,82 @@
     class running extends database {
 		protected $ageRange = array("0-10", "11-17", "18-35", "36-65", "65+");
 		protected $gender = array("Male", "Female");
+		
 		function adjust($id) {
 			$data = $this->listOne($id);
 			$avail_date = explode("_", $data['avail_date']);
 			$today = date("D");
 
-			$randomPost = rand(1, 3);
-
 			$counter = 0;
-
-			if (array_search($today, $avail_date) !== false ) {
+			if (array_search($today, $avail_date) !== false ) {	
 				$total = $this->total($data['ref']);
 				$used_imp = $data['used_imp'];
-				
-				if ($used_imp < $total) {
-					$to = rand(30, 50);
-                    
-                    if ($this->dailCap($data['ref']) <= $data['daily_cap']) {
+				if ($data['status'] == "active") {
+					if ($used_imp < $total) {
+						$to = rand(30, 50);
+							
 						for ($i = 0; $i < $to; $i++) {
-							$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
+							if ($this->dailCap($data['ref']) < $data['daily_cap']) {
+								$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
 
-							$click = rand(0, 1);
+								$click = rand(0, 1);
 
-							if ($click == 1) {
-								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
-								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
-								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
-								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
-								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
-								$this->spin($randomUser['ref'], $data['ref'], $data['url']);
-							}
-							$array['advert'] = $data['ref'];
-							$array['user_id'] = $randomUser['ref'];
-							$array['impression'] = 1;
-							$array['impression_time'] = time()-(60*30);
-							$array['click'] = $click;
-							$array['click_time'] = time();
-				
-							//post to us
-							for ($j = 0; $j < $randomPost; $j++) {
-								$counter++;
-								$this->postUpdate($array, false, false);
-								$this->postUpdate($array, false, false);
-								$this->postUpdate($array, false, false);
-								$this->postUpdate($array, false, false);
-								$this->postUpdate($array, false, false);
-								$this->postUpdate($array, false, false);
+								$array['advert'] = $data['ref'];
+								$array['user_id'] = $randomUser['ref'];
+								$array['impression'] = 1;
+								$array['impression_time'] = time()-(60*30);
+								$array['click'] = $click;
+								$array['click_time'] = time();
+					
+								//post to us
+								for ($l = 0; $l < rand(2,3); $l++) {
+									$counter++;
+									if ($click == 1) {
+										$this->spin($randomUser['ref'], $data['ref'], $data['url']);
+									}
+									$this->postUpdate($array, false, false);
+								}
+							} else {
+								break;
 							}
 						}
+						$this->impresionRefreshOne($data['ref']);
 					}
 				}
 			}
+			
 			return $counter." Processed";
-        }
-        
+		}
+		
+		function impresionRefreshOne($id) {
+			global $db;
+			
+			$time = time();
+			
+			$used_imp = $this->impressionGet($id);
+
+			if ($used_imp >= $this->total($id)) {
+
+				$this->updateOne("advert", "status", "complete", $id);
+			}
+			
+			try {
+				$db->query("UPDATE `advert` SET `used_imp` = '".$used_imp."', `sync_time` = '".$time."' WHERE ref = '".$id."'");
+			} catch(PDOException $ex) {
+				echo "An Error occured! ".$ex->getMessage(); 
+			}
+		}
+
 		function dailCap($advert) {
-			$startTime = mktime(0, 0, 0, date("n"), date('j')-1, date("Y"));
 			$endTime = mktime(0, 0, 0, date("n"), date('j'), date("Y"));
             
-            return $this->query("SELECT COUNT(`ref`) FROM `advert_stat` WHERE `advert` = $advert AND `synctime` BETWEEN ".$startTime." AND ".$endTime, false, "getCol");
-        }
+            return $this->query("SELECT COUNT(`ref`) FROM `advert_stat` WHERE `advert` = ".$advert." AND `synctime` > ".$endTime, false, "getCol");
+		}
+		
+		
+		function impressionGet($id) {
+			return $this->countAll($id, "advert");
+		}
         
 		function spin($user, $ref, $url) {
 			$database = new database;
@@ -105,7 +121,35 @@
 
 			return floor($impression+$impression_added);
 		}
-        
+        	
+		function countAll($id, $tag, $tag2=false, $id2=false, $tag3=false, $id3=false, $order='ref') {
+			$token = array(':id' => $id);
+			if ($tag2 != false) {
+				$sqlTag = " AND `".$tag2."` = :id2";
+				$token[':id2'] = $id2;
+			} else {
+				$sqlTag = "";
+			}
+			if ($tag3 != false) {
+				$sqlTag .= " AND `".$tag3."` = :id3";
+				$token[':id3'] = $id3;
+			} else {
+				$sqlTag .= "";
+			}
+			
+			global $db;
+			try {
+				$sql = $db->prepare("SELECT COUNT(`ref`) FROM `advert_stat` WHERE `".$tag."` = :id".$sqlTag." ORDER BY `".$order."` ASC");
+								
+				$sql->execute($token);
+			} catch(PDOException $ex) {
+				echo "An Error occured! ".$ex->getMessage(); 
+			}
+			
+			$row = $sql->fetchColumn();
+			return $row;
+		}
+
 		function postUpdate($array) {
 			$advert = $array['advert'];
 			$user_id = $array['user_id'];
@@ -132,15 +176,6 @@
                     'synctime' => $synctime);
 
 					$this->insert("advert_stat", $data);
-					$this->insert("advert_stat", $data);
-					$this->insert("advert_stat", $data);
-					$this->insert("advert_stat", $data);
-					$this->insert("advert_stat", $data);
-					$this->insert("advert_stat", $data);
-					$this->insert("advert_stat", $data);
-					$this->insert("advert_stat", $data);
-					$this->insert("advert_stat", $data);
-					$this->insert("advert_stat", $data);
 
 			} else {
 				return false;
@@ -161,8 +196,9 @@
 	//echo $running->adjust(81);
     //echo $running->adjust(82);
     echo $running->adjust(81);
-    echo $running->adjust(82);
-    echo $running->adjust(83);
 	echo "\n";
-    echo $running->adjust(84);
+    echo $running->adjust(82);
+	echo "\n";
+    echo $running->adjust(86);
+	echo "\n";
 ?>
