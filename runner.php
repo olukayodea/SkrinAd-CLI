@@ -25,7 +25,13 @@
     class running extends database {
 		protected $ageRange = array("0-10", "11-17", "18-35", "36-65", "65+");
 		protected $gender = array("Male", "Female");
-		
+
+		protected $importHeader = array("`advert`", "`user_id`", "`service_request`", "`impression`", "`impression_time`", "`click`", "`click_time`", "`ageRange`", "`gender`", "`synctime`");
+		protected $spoofHeader = array("`user`", "`ref`", "`url`");
+
+		protected $list = array();
+		protected $spinList = array();
+
 		function adjust($id) {
 			$data = $this->listOne($id);
 			$avail_date = explode("_", $data['avail_date']);
@@ -43,28 +49,51 @@
 							if ($this->dailCap($data['ref']) < $data['daily_cap']) {
 								$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
 
-								$click = rand(0, 1);
-
-								$array['advert'] = $data['ref'];
-								$array['user_id'] = $randomUser['ref'];
-								$array['impression'] = 1;
-								$array['impression_time'] = time()-(60*30);
-								$array['click'] = $click;
-								$array['click_time'] = time();
-					
 								//post to us
-								for ($l = 0; $l < rand(2,3); $l++) {
+								for ($l = 0; $l < rand(5,10); $l++) {
+									$click = rand(0, 1);
+
+									$list = "(".$data['ref'];
+									$list .= ", ";
+									$list .= $randomUser['ref'];
+									$list .= ", ";
+									$list .= intval($this->getService($data['ref']));
+									$list .= ", 1, '";
+									$list .= time()-(60*60);
+									$list .= "', ";
+									$list .= $click;
+									$list .= ", '";
+									$list .= time()-(60*30);
+									$list .= "', '";
+									$list .= $randomUser['ageRange'];
+									$list .= "', '";
+									$list .= $randomUser['gender'];
+									$list .= "', '";
+									$list .= time()."')";
+
+									$this->list[] = $list;
+					
 									$counter++;
 									if ($click == 1) {
-										$this->spin($randomUser['ref'], $data['ref'], $data['url']);
+										$spin = "(".$randomUser['ref'];
+										$spin .= ", ";
+										$spin .= $data['ref'];
+										$spin .= ", '";
+										$spin .= $data['url']."')";
+										
+										$this->spinList[] = $spin;
 									}
-									$this->postUpdate($array, false, false);
 								}
 							} else {
 								break;
 							}
 						}
-						$this->impresionRefreshOne($data['ref']);
+
+						if (count($this->list) > 0) {
+							$this->postUpdate($data['ref']);
+							$this->spin();
+							$this->impresionRefreshOne($data['ref']);
+						}
 					}
 				}
 			}
@@ -97,14 +126,19 @@
             return $this->query("SELECT COUNT(`ref`) FROM `advert_stat` WHERE `advert` = ".$advert." AND `synctime` > ".$endTime, false, "getCol");
 		}
 		
-		
 		function impressionGet($id) {
 			return $this->countAll($id, "advert");
 		}
         
-		function spin($user, $ref, $url) {
-			$database = new database;
-			$database->insert("spoof_log", array("user" => $user, "ref" => $ref, "url" => $url));
+		function spin() {
+			if  (count($this->spinList) >  0) {
+				$query = "INSERT INTO `spoof_log` (";
+				$query .= implode(",", $this->spoofHeader);
+				$query .= ") VALUES ";
+				$query .= implode(",", $this->spinList);
+				
+				$this->query($query);
+			}
         }
         
 		function listOne($id, $tag='ref') {
@@ -150,33 +184,14 @@
 			return $row;
 		}
 
-		function postUpdate($array) {
-			$advert = $array['advert'];
-			$user_id = $array['user_id'];
-			$impression = $array['impression'];
-			$impression_time = $array['impression_time'];
-			$click = $array['click'];
-			$click_time = $array['click_time'];
-			$service_request = $this->getService($user_id);
-			$synctime = time();
-
-            $userData = $this->getOne("users", $user_id, "ref");
-			
-			if ($this->adCount($advert) < $this->total($advert)) {
-                $data = array(
-                    'advert' => $advert, 
-                    'user_id' => $user_id, 
-                    'service_request' => $service_request, 
-                    'impression' => $impression, 
-                    'impression_time' => $impression_time, 
-                    'click' => $click, 
-                    'click_time' => $click_time, 
-                    'ageRange' => ($userData['ageRange'] != NULL ? $userData['ageRange'] : "36-65"),
-                    'gender' => ($userData['gender'] != NULL ? $userData['gender'] : "Female"),
-                    'synctime' => $synctime);
-
-					$this->insert("advert_stat", $data);
-
+		function postUpdate($id) {
+			if ($this->adCount($id) < $this->total($id)) {
+				$query = "INSERT INTO `advert_stat` (";
+				$query .= implode(",", $this->importHeader);
+				$query .= ") VALUES ";
+				$query .= implode(",", $this->list);
+				
+				return $this->query($query);
 			} else {
 				return false;
 			}
@@ -185,7 +200,6 @@
 		function adCount($id) {
             return $this->query("SELECT COUNT(`ref`) FROM `advert_stat` WHERE `advert` = :id", array(":id"=>$id), "getCol");
         }
-
 
 		function getService($id) {
             return $this->query("SELECT `id` FROM `service_request` WHERE `id` = :id ORDER BY `create_time` DESC LIMIT 1", array(":id"=>$id), "getCol");
