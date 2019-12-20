@@ -47,6 +47,24 @@
             return $this->run($query, $prepare, "insert");
         }
 
+		/**
+		 * @param string	$table		name of table to be inserted into
+		 * @param array		$header		the array containing the table coloums
+		 * @param array		$list		the array containing the data to dump into the database
+		 */
+        public function multiInsert($table, array $header, array $list) {
+            if (count($list) > 0) {
+                $query = "INSERT INTO `".$table."` (";
+                $query .= implode(",", $header);
+                $query .= ") VALUES ";
+                $query .= implode(",", $list);
+                
+                return $this->run($query);
+            } else {
+                return false;
+            }
+        }
+
 		/**  
 		* @param string $table		name of table to be inserted into
         * @param array $data		an array containing the value key pair of the data to be inserted
@@ -229,8 +247,11 @@
         *   $ref     =   row to update
         *   $id      =   unique colounm in row to update
         */
-        public function updateOne($table, $tag, $value, $id, $ref="ref") {
-            $query = "UPDATE `".$table."` SET  `".$tag."` = :".$tag." WHERE `".$ref."`=:w_".$ref;
+        public function updateOne($table, $tag, $value, $id, $ref="ref", $extra="") {
+            if ($extra != "") {
+                $extra .= ",".$extra;
+            }
+            $query = "UPDATE `".$table."` SET  `".$tag."` = :".$tag.$extra." WHERE `".$ref."`=:w_".$ref;
             $prepare[":".$tag] = $value;
             $prepare[":w_".$ref] = $id;
 

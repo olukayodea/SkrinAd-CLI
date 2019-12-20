@@ -37,13 +37,15 @@
 			$avail_date = explode("_", $data['avail_date']);
 			$today = date("D");
 
+			$limit = $data['daily_cap']/144;
+
 			$counter = 0;
 			if (array_search($today, $avail_date) !== false ) {	
 				$total = $this->total($data['ref']);
 				$used_imp = $data['used_imp'];
 				if ($data['status'] == "active") {
 					if ($used_imp < $total) {
-						$to = rand(30, 50);
+						$to = rand($limit/2, $limit*0.2);
 							
 						for ($i = 0; $i < $to; $i++) {
 							if ($this->dailCap($data['ref']) < $data['daily_cap']) {
