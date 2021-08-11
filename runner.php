@@ -5,7 +5,7 @@
     // $dbusername = "root";
     // $dbpassword = "root";
     // $dbname = "linnkste_skrinad";
-    $URL = "https://skrinad.me/";
+	$URL = "https://console.skrinad.me/";
     $servername = "main-db.cpwhcjg2ara2.eu-west-3.rds.amazonaws.com";
     $dbusername = "skrinad_db_user";
     $dbpassword = "n%).*6CBlBBu";
@@ -31,6 +31,10 @@
 
 		protected $list = array();
 		protected $spinList = array();
+
+		function getRunning() {
+
+		}
 
 		function adjust($id) {
 			$data = $this->listOne($id);
@@ -211,10 +215,6 @@
     $running = new running;
 	//echo $running->adjust(81);
     //echo $running->adjust(82);
-    echo $running->adjust(81);
-	echo "\n";
-    echo $running->adjust(82);
-	echo "\n";
-    echo $running->adjust(86);
+    echo $running->adjust(94);
 	echo "\n";
 ?>

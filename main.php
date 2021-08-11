@@ -5,7 +5,7 @@
     // $dbusername = "root";
     // $dbpassword = "root";
     // $dbname = "linnkste_skrinad";
-    $URL = "https://skrinad.me/";
+	$URL = "https://console.skrinad.me/";
     $servername = "main-db.cpwhcjg2ara2.eu-west-3.rds.amazonaws.com";
     $dbusername = "skrinad_db_user";
     $dbpassword = "n%).*6CBlBBu";
