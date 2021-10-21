@@ -215,6 +215,6 @@
     $running = new running;
 	//echo $running->adjust(81);
     //echo $running->adjust(82);
-    echo $running->adjust(94);
+    echo $running->adjust(99);
 	echo "\n";
 ?>
