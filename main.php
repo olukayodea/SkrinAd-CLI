@@ -37,6 +37,12 @@
 
         $returnedData = $database->lists("spoof_log", false, 1, "id", "ASC", false, "getRow");
 
+        if (strpos($returnedData, "?") === false) {
+            $returnedData .= "?utm_medium=SkrinAd";
+        } else {
+            $returnedData .= "&utm_medium=SkrinAd";
+        }
+
         $rand_url = URL."externalLink?i&u=".$returnedData['ref']."_".$returnedData['user']."url=".urlencode($returnedData['url']);
         
         $headers[] = 'Accept: '.$row['accept']; 
