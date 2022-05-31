@@ -34,8 +34,7 @@
 				$used_imp = $data['used_imp'];
 				if ($data['status'] == "active") {
 					if ($used_imp < $total) {
-						echo "here";
-						$to = rand($limit/2, $limit*0.2);
+						echo $to = rand($limit/2, $limit*0.2);
 							
 						for ($i = 0; $i < $to; $i++) {
 							if ($this->dailCap($data['ref']) < $data['daily_cap']) {
