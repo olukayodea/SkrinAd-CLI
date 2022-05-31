@@ -1,14 +1,7 @@
 <?php	
 	error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 
-    include_once("cred.php");
-
-	define("URL", $URL);
-	define("servername",  $servername);
-	define("dbusername",  $dbusername);
-	define("dbpassword",  $dbpassword);
-	define("dbname",  $dbname);
-	
+	include_once("constants.php");	
     include_once("config.php");
     
     $database = new database;
@@ -205,8 +198,13 @@
     }
     
     $running = new running;
-	//echo $running->adjust(81);
-    //echo $running->adjust(82);
-    echo $running->adjust(99);
+
+	if ($argData == 'dev') {
+		echo $running->adjust(118);
+	} else {
+		//echo $running->adjust(81);
+		//echo $running->adjust(82);
+		echo $running->adjust(99);
+	}
 	echo "\n";
 ?>
