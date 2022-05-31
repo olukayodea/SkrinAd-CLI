@@ -40,6 +40,8 @@
 							if ($this->dailCap($data['ref']) < $data['daily_cap']) {
 								$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
 
+								print_r($randomUser);
+
 								//post to us
 								for ($l = 0; $l < rand(5,10); $l++) {
 									$click = rand(0, 1);
