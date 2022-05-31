@@ -34,10 +34,6 @@
 				$used_imp = $data['used_imp'];
 				if ($data['status'] == "active") {
 					if ($used_imp < $total) {
-						echo $limit/2;
-						echo "\n";
-						echo $limit*0.2;
-						echo "\n";
 						echo $to = rand($limit/0.2, $limit*0.5);
 							
 						for ($i = 0; $i < $to; $i++) {
