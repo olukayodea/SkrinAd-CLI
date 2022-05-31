@@ -3,6 +3,8 @@
 
 	include_once("constants.php");	
     include_once("config.php");
+
+	echo $argData;
     
     $database = new database;
     $db = $database->connect();
