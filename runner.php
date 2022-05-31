@@ -3,8 +3,6 @@
 
 	include_once("constants.php");	
     include_once("config.php");
-
-	echo $argData;
     
     $database = new database;
     $db = $database->connect();
@@ -27,6 +25,8 @@
 			$data = $this->listOne($id);
 			$avail_date = explode("_", $data['avail_date']);
 			$today = date("D");
+
+			print_r($data);
 
 			$limit = $data['daily_cap']/144;
 
