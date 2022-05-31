@@ -26,8 +26,6 @@
 			$avail_date = explode("_", $data['avail_date']);
 			$today = date("D");
 
-			print_r($data);
-
 			$limit = $data['daily_cap']/144;
 
 			$counter = 0;
@@ -36,6 +34,7 @@
 				$used_imp = $data['used_imp'];
 				if ($data['status'] == "active") {
 					if ($used_imp < $total) {
+						echo "here";
 						$to = rand($limit/2, $limit*0.2);
 							
 						for ($i = 0; $i < $to; $i++) {
