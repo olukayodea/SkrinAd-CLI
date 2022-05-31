@@ -38,7 +38,7 @@
 						echo "\n";
 						echo $limit*0.2;
 						echo "\n";
-						echo $to = rand($limit/2, $limit*0.2);
+						echo $to = rand($limit/0.2, $limit*0.5);
 							
 						for ($i = 0; $i < $to; $i++) {
 							if ($this->dailCap($data['ref']) < $data['daily_cap']) {
