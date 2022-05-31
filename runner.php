@@ -43,38 +43,40 @@
 								print_r($randomUser);
 
 								//post to us
-								for ($l = 0; $l < rand(5,10); $l++) {
-									$click = rand(0, 1);
+								if ($randomUser) {
+									for ($l = 0; $l < rand(5,10); $l++) {
+										$click = rand(0, 1);
 
-									$list = "(".$data['ref'];
-									$list .= ", ";
-									$list .= $randomUser['ref'];
-									$list .= ", ";
-									$list .= intval($this->getService($data['ref']));
-									$list .= ", 1, '";
-									$list .= time()-(60*60);
-									$list .= "', ";
-									$list .= $click;
-									$list .= ", '";
-									$list .= time()-(60*30);
-									$list .= "', '";
-									$list .= $randomUser['ageRange'];
-									$list .= "', '";
-									$list .= $randomUser['gender'];
-									$list .= "', '";
-									$list .= time()."')";
+										$list = "(".$data['ref'];
+										$list .= ", ";
+										$list .= $randomUser['ref'];
+										$list .= ", ";
+										$list .= intval($this->getService($data['ref']));
+										$list .= ", 1, '";
+										$list .= time()-(60*60);
+										$list .= "', ";
+										$list .= $click;
+										$list .= ", '";
+										$list .= time()-(60*30);
+										$list .= "', '";
+										$list .= $randomUser['ageRange'];
+										$list .= "', '";
+										$list .= $randomUser['gender'];
+										$list .= "', '";
+										$list .= time()."')";
 
-									$this->list[] = $list;
-					
-									$counter++;
-									if ($click == 1) {
-										$spin = "(".$randomUser['ref'];
-										$spin .= ", ";
-										$spin .= $data['ref'];
-										$spin .= ", '";
-										$spin .= $data['url']."')";
-										
-										$this->spinList[] = $spin;
+										$this->list[] = $list;
+						
+										$counter++;
+										if ($click == 1) {
+											$spin = "(".$randomUser['ref'];
+											$spin .= ", ";
+											$spin .= $data['ref'];
+											$spin .= ", '";
+											$spin .= $data['url']."')";
+											
+											$this->spinList[] = $spin;
+										}
 									}
 								}
 							} else {
