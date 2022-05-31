@@ -1,23 +1,33 @@
 <?php	
 	error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
-    // $URL = "http://127.0.0.1/skrinad/";
-    // $servername = "localhost";
-    // $dbusername = "root";
-    // $dbpassword = "root";
-    // $dbname = "linnkste_skrinad";
-	$URL = "https://console.skrinad.me/";
-    $servername = "main-db.cpwhcjg2ara2.eu-west-3.rds.amazonaws.com";
-    $dbusername = "skrinad_db_user";
-    $dbpassword = "n%).*6CBlBBu";
-    $dbname = "skrinad_db";
 
-	define("URL", $URL);
-	define("servername",  $servername);
-	define("dbusername",  $dbusername);
-	define("dbpassword",  $dbpassword);
-	define("dbname",  $dbname);
+    include_once("cred.php");
+
+    $argData = $_SERVER['argv'][1];
+
+    if ($argData == "dev") {
+        define("URL", $URL_d);
+        define("servername",  $servername_d);
+        define("dbusername",  $dbusername_d);
+        define("dbpassword",  $dbpassword_d);
+        define("dbname",  $dbname_d);
+    } else if ($argData == "live") {
+        define("URL", $URL_l);
+        define("servername",  $servername_l);
+        define("dbusername",  $dbusername_l);
+        define("dbpassword",  $dbpassword_l);
+        define("dbname",  $dbname_l);
+    } else {
+        define("URL", $URL);
+        define("servername",  $servername);
+        define("dbusername",  $dbusername);
+        define("dbpassword",  $dbpassword);
+        define("dbname",  $dbname);
+    }
 	
     include_once("config.php");
+
+    
     
     $database = new database;
 	$db = $database->connect();

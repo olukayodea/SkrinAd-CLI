@@ -1,15 +1,7 @@
 <?php	
 	error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
-    // $URL = "http://127.0.0.1/skrinad/";
-    // $servername = "localhost";
-    // $dbusername = "root";
-    // $dbpassword = "root";
-    // $dbname = "linnkste_skrinad";
-	$URL = "https://console.skrinad.me/";
-    $servername = "main-db.cpwhcjg2ara2.eu-west-3.rds.amazonaws.com";
-    $dbusername = "skrinad_db_user";
-    $dbpassword = "n%).*6CBlBBu";
-    $dbname = "skrinad_db";
+
+    include_once("cred.php");
 
 	define("URL", $URL);
 	define("servername",  $servername);
