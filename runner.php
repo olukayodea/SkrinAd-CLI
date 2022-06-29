@@ -40,8 +40,6 @@
 							if ($this->dailCap($data['ref']) < $data['daily_cap']) {
 								$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
 
-								print_r($randomUser);
-
 								//post to us
 								if ($randomUser) {
 									for ($l = 0; $l < rand(5,10); $l++) {
@@ -205,10 +203,17 @@
 
 	if ($argData == 'dev') {
 		echo $running->adjust(118);
+		echo $running->adjust(118);
+		echo $running->adjust(118);
+		echo $running->adjust(118);
+		echo $running->adjust(118);
+		echo $running->adjust(118);
+		echo $running->adjust(118);
 	} else {
 		//echo $running->adjust(81);
 		//echo $running->adjust(82);
-		echo $running->adjust(99);
+		echo $running->adjust(118);
+		echo $running->adjust(119);
 	}
 	echo "\n";
 ?>
