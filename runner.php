@@ -33,7 +33,7 @@
 				$total = $this->total($data['ref']);
 				$used_imp = $data['used_imp'];
 				if ($data['status'] == "active") {
-					if ($used_imp < $total) {
+					if ($used_imp < ((int) $total * 0.8)) {
 						$to = rand($limit/0.2, $limit*0.5);
 							
 						for ($i = 0; $i < $to; $i++) {
