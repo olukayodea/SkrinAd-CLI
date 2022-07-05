@@ -33,11 +33,11 @@
 				$total = $this->total($data['ref']);
 				$used_imp = $data['used_imp'];
 				if ($data['status'] == "active") {
-					if ($used_imp < ((int) $total * 0.8)) {
+					if ($used_imp < $total) {
 						$to = rand($limit/0.2, $limit*0.5);
 							
 						for ($i = 0; $i < $to; $i++) {
-							if ($this->dailCap($data['ref']) < $data['daily_cap']) {
+							if (((int) $this->dailCap($data['ref'] * 0.75)) < $data['daily_cap']) {
 								$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
 
 								//post to us
@@ -204,8 +204,8 @@
 	if ($argData == 'dev') {
 		echo $running->adjust(118);
 	} else {
-		// echo $running->adjust(118);
-		// echo $running->adjust(119);
+		echo $running->adjust(118);
+		echo $running->adjust(119);
 	}
 	echo "\n";
 ?>
