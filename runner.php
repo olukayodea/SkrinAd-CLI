@@ -37,7 +37,7 @@
 						$to = rand($limit/0.2, $limit*0.5);
 							
 						for ($i = 0; $i < $to; $i++) {
-							if (((int) $this->dailCap($data['ref'] * 0.75)) < $data['daily_cap']) {
+							if ((int) $this->dailCap($data['ref']) < ((int) $data['daily_cap']*0.75)) {
 								$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
 
 								//post to us
@@ -114,9 +114,10 @@
 		}
 
 		function dailCap($advert) {
-			$endTime = mktime(0, 0, 0, date("n"), date('j'), date("Y"));
+			$from = mktime(0, 0, 0, date("n"), date('j'), date("Y"));
+			$to = mktime(23, 59, 59, date("n"), date('j'), date("Y"));
             
-            return $this->query("SELECT COUNT(`ref`) FROM `advert_stat` WHERE `advert` = ".$advert." AND `synctime` > ".$endTime, false, "getCol");
+            return $this->query("SELECT COUNT(`ref`) FROM `advert_stat` WHERE `advert` = ".$advert." AND `synctime` BETWEEN ".$from." AND ".$to, false, "getCol");
 		}
 		
 		function impressionGet($id) {
@@ -204,8 +205,8 @@
 	if ($argData == 'dev') {
 		echo $running->adjust(118);
 	} else {
-		// echo $running->adjust(118);
-		// echo $running->adjust(119);
+		echo $running->adjust(118);
+		echo $running->adjust(119);
 	}
 	echo "\n";
 ?>
