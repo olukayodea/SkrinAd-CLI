@@ -208,6 +208,12 @@
 		echo $running->adjust(118);
 		echo $running->adjust(119);
 		echo $running->adjust(121);
+		echo $running->adjust(122);
+		echo $running->adjust(123);
+		echo $running->adjust(124);
+		echo $running->adjust(125);
+		echo $running->adjust(126);
+		echo $running->adjust(127);
 	}
 	echo "\n";
 ?>
