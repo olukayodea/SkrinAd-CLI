@@ -205,15 +205,6 @@
 	if ($argData == 'dev') {
 		echo $running->adjust(118);
 	} else {
-		echo $running->adjust(118);
-		echo $running->adjust(121);
-		echo $running->adjust(122);
-		echo $running->adjust(123);
-		echo $running->adjust(124);
-		echo $running->adjust(125);
-		echo $running->adjust(126);
-		echo $running->adjust(127);
-		echo $running->adjust(128);
 		echo $running->adjust(129);
 	}
 	echo "\n";
