@@ -21,95 +21,95 @@
 
 		}
 
-		function adjust($id) {
-			$data = $this->listOne($id);
-			$avail_date = explode("_", $data['avail_date']);
+		function adjuster( $array = [] ) {
 			$today = date("D");
 
-			$limit = $data['daily_cap']/144;
+			if ( is_array( $array ) && count( $array )) {
+				$searchList = implode( ",", $array );
 
-			$counter = 0;
-			if (array_search($today, $avail_date) !== false ) {	
-				$total = $this->total($data['ref']);
-				$used_imp = $data['used_imp'];
-				if ($data['status'] == "active") {
-					if ($used_imp < $total) {
-						$to = rand($limit/0.2, $limit*0.5);
+				$bulkData = $this->query("SELECT * FROM `advert` WHERE `status` = 'active' AND `ref` IN (" . $searchList . ")", false, "list" );
+
+				if (count( $bulkData ) > 0) {
+					foreach( $bulkData as $data ) {
+						$avail_date = explode("_", $data['avail_date']);
+						if (array_search($today, $avail_date) !== false ) {	
+							$total = $this->total($data['ref']);
+							$used_imp = $data['used_imp'];
+
+							if ($used_imp < $total) {
+								if ((int) $this->dailCap($data['ref']) < ((int) $data['daily_cap']*0.75)) {
+									for ($l = 0; $l < rand(10,20); $l++) {
+										$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
+										if ($randomUser) {
+											$click = rand(0, 1);
+	
+											$list = "(".$data['ref'];
+											$list .= ", ";
+											$list .= $randomUser['ref'];
+											$list .= ", ";
+											$list .= intval($this->getService($randomUser['ref']));
+											$list .= ", 1, '";
+											$list .= time()-(60*60);
+											$list .= "', ";
+											$list .= $click;
+											$list .= ", '";
+											$list .= time()-(60*30);
+											$list .= "', '";
+											$list .= $randomUser['ageRange'];
+											$list .= "', '";
+											$list .= $randomUser['gender'];
+											$list .= "', '";
+											$list .= time()."')";
+	
+											$this->list[] = $list;
 							
-						for ($i = 0; $i < $to; $i++) {
-							if ((int) $this->dailCap($data['ref']) < ((int) $data['daily_cap']*0.75)) {
-								$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
-
-								//post to us
-								if ($randomUser) {
-									for ($l = 0; $l < rand(5,10); $l++) {
-										$click = rand(0, 1);
-
-										$list = "(".$data['ref'];
-										$list .= ", ";
-										$list .= $randomUser['ref'];
-										$list .= ", ";
-										$list .= intval($this->getService($data['ref']));
-										$list .= ", 1, '";
-										$list .= time()-(60*60);
-										$list .= "', ";
-										$list .= $click;
-										$list .= ", '";
-										$list .= time()-(60*30);
-										$list .= "', '";
-										$list .= $randomUser['ageRange'];
-										$list .= "', '";
-										$list .= $randomUser['gender'];
-										$list .= "', '";
-										$list .= time()."')";
-
-										$this->list[] = $list;
-						
-										$counter++;
-										if ($click == 1) {
-											$spin = "(".$randomUser['ref'];
-											$spin .= ", ";
-											$spin .= $data['ref'];
-											$spin .= ", '";
-											$spin .= $data['url']."')";
-											
-											$this->spinList[] = $spin;
+											if ($click == 1) {
+												$spin = "(".$randomUser['ref'];
+												$spin .= ", ";
+												$spin .= $data['ref'];
+												$spin .= ", '";
+												$spin .= $data['url']."')";
+												
+												$this->spinList[] = $spin;
+											}
 										}
 									}
+
 								}
-							} else {
-								break;
 							}
 						}
+					}
 
-						if (count($this->list) > 0) {
-							$this->postUpdate($data['ref']);
-							$this->spin();
-							$this->impresionRefreshOne($data['ref']);
-						}
+					if (count($this->list) > 0) {
+						$this->postUpdate();
+						$this->spin();
+						$this->impresionRefreshOne($array);
 					}
 				}
+				return false;
 			}
-			
-			return $counter." Processed";
+
+			return false;
 		}
 		
-		function impresionRefreshOne($id) {
+		function impresionRefreshOne($array) {
 			global $db;
 			
 			$time = time();
 			
-			$used_imp = $this->impressionGet($id);
+			foreach( $array as $id) {
+				$used_imp = $this->impressionGet($id);
 
-			if ($used_imp >= $this->total($id)) {
+				if ($used_imp >= $this->total($id)) {
 
-				$this->updateOne("advert", "status", "complete", $id);
-			}
-			
-			try {
-				$db->query("UPDATE `advert` SET `used_imp` = '".$used_imp."', `sync_time` = '".$time."' WHERE ref = '".$id."'");
-			} catch(PDOException $ex) {
-				echo "An Error occured! ".$ex->getMessage(); 
+					$this->updateOne("advert", "status", "complete", $id);
+				}
+				
+				try {
+					$db->query("UPDATE `advert` SET `used_imp` = '".$used_imp."', `sync_time` = '".$time."' WHERE ref = '".$id."'");
+				} catch(PDOException $ex) {
+					echo "An Error occured! ".$ex->getMessage(); 
+				}
 			}
 		}
 
@@ -178,34 +178,30 @@
 			return $row;
 		}
 
-		function postUpdate($id) {
-			if ($this->adCount($id) < $this->total($id)) {
-				$query = "INSERT INTO `advert_stat` (";
-				$query .= implode(",", $this->importHeader);
-				$query .= ") VALUES ";
-				$query .= implode(",", $this->list);
-				
-				return $this->query($query);
-			} else {
-				return false;
-			}
+		function postUpdate() {
+			$query = "INSERT INTO `advert_stat` (";
+			$query .= implode(",", $this->importHeader);
+			$query .= ") VALUES ";
+			$query .= implode(",", $this->list);
+			
+			return $this->query($query);
         }
         
 		function adCount($id) {
             return $this->query("SELECT COUNT(`ref`) FROM `advert_stat` WHERE `advert` = :id", array(":id"=>$id), "getCol");
         }
 
-		function getService($id) {
-            return $this->query("SELECT `id` FROM `service_request` WHERE `id` = :id ORDER BY `create_time` DESC LIMIT 1", array(":id"=>$id), "getCol");
+		function getService() {
+            return $this->query("SELECT `id` FROM `service_request` ORDER BY RAND(),`create_time` DESC LIMIT 1", false, "getCol");
 		}
     }
     
     $running = new running;
 
 	if ($argData == 'dev') {
-		echo $running->adjust(118);
+		$running->adjuster([118]);
 	} else {
-		echo $running->adjust(129);
+		$running->adjuster( [119, 121, 122, 123, 124, 125, 127, 129] );
 	}
 	echo "\n";
 ?>
