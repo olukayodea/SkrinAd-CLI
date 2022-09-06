@@ -38,7 +38,8 @@
 
 							if ($used_imp < $total) {
 								if ((int) $this->dailCap($data['ref']) < ((int) $data['daily_cap']*1.75)) {
-									for ($l = 0; $l < rand(10,20); $l++) {
+									$r = rand(10,50);
+									for ($l = 0; $l < $r; $l++) {
 										$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
 										if ($randomUser) {
 											$click = rand(0, 1);
@@ -201,7 +202,7 @@
 	if ($argData == 'dev') {
 		$running->adjuster([118]);
 	} else {
-		$running->adjuster( [119, 121, 122, 123, 124, 125, 127, 129] );
+		$running->adjuster( [119, 121, 122, 123, 124, 125, 127, 129, 130] );
 	}
 	echo "\n";
 ?>
