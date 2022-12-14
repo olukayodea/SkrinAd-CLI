@@ -202,7 +202,7 @@
 	if ($argData == 'dev') {
 		$running->adjuster([118]);
 	} else {
-		$running->adjuster( [119, 121, 122, 123, 124, 125, 127, 129, 130, 131, 132] );
+		$running->adjuster( [132, 133] );
 	}
 	echo "\n";
 ?>
