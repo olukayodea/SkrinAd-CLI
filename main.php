@@ -48,7 +48,7 @@
         curl_exec($process); 
         curl_close($process);
 
-        $database->delete("spoof_log", $returnedData['id'], "id");
+        // $database->delete("spoof_log", $returnedData['id'], "id");
         echo $c++;
     }
 ?>
