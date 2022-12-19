@@ -44,16 +44,7 @@
         curl_setopt($process, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($process, CURLOPT_SSL_VERIFYPEER, false);
 
-        echo curl_exec($process); 
-
-        if(curl_exec($process) === false)
-        {
-            echo 'Curl error: ' . curl_error($process);
-        }
-        else
-        {
-            echo 'Operation completed without any errors';
-        }
+        curl_exec($process); 
         curl_close($process);
 
         // $database->delete("spoof_log", $returnedData['id'], "id");
