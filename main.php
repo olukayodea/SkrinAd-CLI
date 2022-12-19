@@ -8,7 +8,7 @@
 	$db = $database->connect();
 
     $count = $database->lists("spoof_log", false, false, "RAND", "", false, "count");
-    $random = rand(100,150);
+    $random = rand(50,100);
     if ($count > $random) {
         $limit = $random;
     } else {
