@@ -22,8 +22,8 @@
 
         $returnedData = $database->lists("spoof_log", false, 1, "id", "ASC", false, "getRow");
 
-        $rand_url = URL."externalLink?i&u=".$returnedData['ref']."_".$returnedData['user']."url=".urlencode($returnedData['url']);
-        
+        echo $rand_url = URL."externalLink?i&u=".$returnedData['ref']."_".$returnedData['user']."url=".urlencode($returnedData['url']);
+        echo "/n";
         $headers[] = 'Accept: '.$row['accept']; 
         $headers[] = 'Connection: Keep-Alive'; 
         $headers[] = 'Upgrade-Insecure-Requests: 1';
