@@ -200,11 +200,6 @@
     }
     
     $running = new running;
-
-	if ($argData == 'dev') {
-		$running->adjuster([118]);
-	} else {
-		$running->adjuster( [132, 133] );
-	}
+	$running->adjuster( [132, 133] );
 	echo "\n";
 ?>
