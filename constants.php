@@ -22,4 +22,15 @@ if ($argData == "dev") {
     define("dbpassword",  $dbpassword);
     define("dbname",  $dbname);
 }
+echo $URL;
+echo "<br>";
+echo $servername;
+echo "<br>";
+echo $dbusername;
+echo "<br>";
+echo $dbpassword;
+echo "<br>";
+echo $dbname;
+echo "<br>";
+
 ?>
