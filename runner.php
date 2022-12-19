@@ -33,12 +33,11 @@
 					foreach( $bulkData as $data ) {
 						$avail_date = explode("_", $data['avail_date']);
 						if (array_search($today, $avail_date) !== false ) {	
-							print_r($data);
 							$total = $this->total($data['ref']);
 							$used_imp = $data['used_imp'];
 
 							// if ($used_imp < $total) {
-								if ((int) $this->dailCap($data['ref']) < ((int) $data['daily_cap']*0.75)) {
+								// if ((int) $this->dailCap($data['ref']) < ((int) $data['daily_cap']*0.75)) {
 									$r = rand(10,250);
 									for ($l = 0; $l < $r; $l++) {
 										$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
@@ -77,7 +76,7 @@
 										}
 									}
 
-								}
+								// }
 							// }
 						}
 					}
