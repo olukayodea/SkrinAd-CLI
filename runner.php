@@ -29,6 +29,8 @@
 
 				$bulkData = $this->query("SELECT * FROM `advert` WHERE `status` = 'active' AND `ref` IN (" . $searchList . ")", false, "list" );
 
+				print_r($bulkData);
+
 				if (count( $bulkData ) > 0) {
 					foreach( $bulkData as $data ) {
 						$avail_date = explode("_", $data['avail_date']);
