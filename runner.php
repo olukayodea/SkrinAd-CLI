@@ -31,9 +31,9 @@
 
 				if (count( $bulkData ) > 0) {
 					foreach( $bulkData as $data ) {
-						print_r($data);
 						$avail_date = explode("_", $data['avail_date']);
 						if (array_search($today, $avail_date) !== false ) {	
+							print_r($data);
 							$total = $this->total($data['ref']);
 							$used_imp = $data['used_imp'];
 
