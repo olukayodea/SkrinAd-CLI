@@ -43,12 +43,13 @@
 										$randomUser = $this->lists("users", false, 1, "RAND", "ASC", "`ageRange` = '".$this->ageRange[array_rand($this->ageRange)]."' AND `gender` = '".$this->gender[array_rand($this->gender)]."'", "getRow");
 										if ($randomUser) {
 											$click = rand(0, 1);
+											$sData = $this->getService($randomUser['ref']);
 	
 											$list = "(".$data['ref'];
 											$list .= ", ";
 											$list .= $randomUser['ref'];
 											$list .= ", ";
-											$list .= intval($this->getService($randomUser['ref']));
+											$list .= intval($sData['id']);
 											$list .= ", 1, '";
 											$list .= time()-(60*60);
 											$list .= "', ";
@@ -72,6 +73,16 @@
 												$spin .= $data['url']."')";
 												
 												$this->spinList[] = $spin;
+											}
+
+
+											if (intval($sData['id']) > 0) {
+												$advertLocationData['advert'] = $data['ref'];
+												$advertLocationData['city'] = $sData['city'];
+												$advertLocationData['state'] = $sData['state'];
+												$advertLocationData['country'] = $sData['country'];
+												$advertLocationData['device'] = $sData['device'];
+												$this->addAdvertLocation($advertLocationData);
 											}
 										}
 									}
@@ -192,7 +203,11 @@
         }
 
 		function getService() {
-            return $this->query("SELECT `id` FROM `service_request` ORDER BY RAND(),`create_time` DESC LIMIT 1", false, "getCol");
+            return $this->query("SELECT * FROM `service_request` ORDER BY RAND(),`create_time` DESC LIMIT 1", false, "getCol");
+		}
+		
+		public function addAdvertLocation($data) {
+			return $this->insert("advert_service_request",array('advert' => $data['advert'],'city' => $data['city'],'state' => $data['state'],'country' => $data['country'],'device' => $data['device'],'create_time' => time()));
 		}
     }
     
