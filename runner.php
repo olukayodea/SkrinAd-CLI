@@ -212,6 +212,6 @@
     }
     
     $running = new running;
-	$running->adjuster( [140] );
+	$running->adjuster( [140,141] );
 	echo "\n";
 ?>
