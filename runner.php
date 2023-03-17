@@ -27,7 +27,7 @@
 			if ( is_array( $array ) && count( $array )) {
 				$searchList = implode( ",", $array );
 
-				$bulkData = $this->query("SELECT * FROM `advert` WHERE `status` = 'active' AND `ref` IN (" . $searchList . ")", false, "list" );
+				$bulkData = $this->query("SELECT * FROM `advert` WHERE `start_date` <= ".time()." AND  `status` = 'active' AND `ref` IN (" . $searchList . ")", false, "list" );
 
 				if (count( $bulkData ) > 0) {
 					foreach( $bulkData as $data ) {
@@ -212,6 +212,6 @@
     }
     
     $running = new running;
-	$running->adjuster( [140,141,142] );
+	$running->adjuster( [140,141,142,143,144,145,146] );
 	echo "\n";
 ?>
